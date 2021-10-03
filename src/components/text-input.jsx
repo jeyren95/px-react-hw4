@@ -1,11 +1,12 @@
 import React from "react";
 import { FieldContext } from "./field-context";
 
-export const TextInput = React.forwardRef((props, ref) => {
+export const TextInput = React.forwardRef(({ errorMessage, touched, ...props }, ref) => {
     const id = React.useContext(FieldContext)
-
+    
     return (
         <div className="mt-1">
+            {touched && errorMessage ? <p className="m-3 text-pink-600 text-sm">{errorMessage}</p> : null}
             <input 
             {...props}
             ref={ref}

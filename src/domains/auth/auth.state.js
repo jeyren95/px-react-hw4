@@ -1,4 +1,6 @@
 import React from "react";
+import { loginUser, fetchUser } from "./auth.service";
+import { useHistory } from "react-router-dom";
 
 const ACCESS_TOKEN_STORAGE = "access_token";
 
@@ -12,7 +14,6 @@ const INITIAL_AUTH_STATE = localStorage.getItem(ACCESS_TOKEN_STORAGE) ?
         authStatus: "anonymous",
         token: null
     }
-    
 
 
 // useReducer to handle auth state
@@ -69,39 +70,27 @@ export const AuthProvider = ({ children }) => {
 }
 
 
-// login user
-const loginUser = (userDetails) => 
-    fetch("https://ecomm-service.herokuapp.com/login", {
-        method: "POST",
-        headers: {
-            accept: "application/json",
-            "Content-Type": "application/json"
-        },
-        body: JSON.stringify(userDetails)
-    })
-    .then((res) => Promise.all([res.status, res.json()]))
-
 
 export const useLogin = () => {
     const authState = React.useContext(AuthContext)
     const [loginError, setLoginError] = React.useState("")
+    const history = useHistory()
 
     const attemptLogin = (userDetails) => 
         loginUser(userDetails)
         .then((data) => {
-            if (data[0] === 200) {
-                if (loginError !== "") {
-                    setLoginError("")
-                }
-                authState.login(data[1].access_token)
-                localStorage.setItem(ACCESS_TOKEN_STORAGE, data[1].access_token)
-            } else {
-                setLoginError(data[1].message)
+            if (loginError !== "") {
+                setLoginError("")
             }
+            authState.login(data.access_token)
+            localStorage.setItem(ACCESS_TOKEN_STORAGE, data.access_token)
+            history.push("/")
         })
-        .catch((err) => console.log(err.message))
+        .catch((err) => {
+            console.log(err.message)
+            setLoginError(err.message)
+        })
 
-    
      
     if (!authState) {
         throw new Error("Your application must be wrapped with Auth Provider")
@@ -125,3 +114,46 @@ export const useLogout = () => {
         }
     }
 }
+
+
+
+export const useUser = () => {
+    const [currentUserId, setCurrentUserId] = React.useState("")
+    const [currentName, setCurrentName] = React.useState("")
+    const authState = React.useContext(AuthContext)
+
+    React.useEffect(() => {
+        const controller = new AbortController()
+        fetchUser(authState.token, controller.signal)
+        .then((data) => {
+            setCurrentUserId(data.userId)
+            setCurrentName(data.name)
+        })
+        .catch((err) => console.log(err))
+
+        return () => controller.abort()
+    }, [authState.token])
+
+    return {
+        currentUserId,
+        currentName
+    }
+}
+
+export const UserContext = React.createContext()
+UserContext.displayName = "UserContext"
+
+export const UserProvider = ({ children, currentUserId, currentName }) => {
+    const currentUser = {
+        currentUserId, 
+        currentName
+    }
+
+    return (
+        <UserContext.Provider value={currentUser}>
+            { children }
+        </UserContext.Provider>
+    )
+
+}
+

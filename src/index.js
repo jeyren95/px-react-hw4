@@ -13,12 +13,18 @@ import { MovieDetailsPage } from "pages/movie-details";
 import { Error404 } from "pages/error-404";
 
 // provide the query client as a context
-const queryClient = new QueryClient()
+const queryClient = new QueryClient({
+    defaultOptions: {
+        queries: {
+            staleTime: 5000
+        }
+    }
+})
 
 ReactDOM.render(
     <BrowserRouter>
         <QueryClientProvider client={queryClient}>
-            <AuthProvider>
+            <AuthProvider>                
                 <AppShell>
                     <Switch>
                         <Route path="/register">
@@ -37,9 +43,8 @@ ReactDOM.render(
                             <Error404 />
                         </Route>
                     </Switch>
-                </AppShell>
+                </AppShell>            
             </AuthProvider>
         </QueryClientProvider>
-
     </BrowserRouter>
     , document.getElementById("root"))

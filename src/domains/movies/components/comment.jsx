@@ -1,11 +1,14 @@
+import React from "react";
 import { StarIcon } from "@heroicons/react/solid";
 import { TrashIcon } from "@heroicons/react/solid";
 import { Button } from "components/button";
 import { useDeleteComment } from "domains/movies";
+import { UserContext } from "domains/auth";
 
 
 export const Comment = ({ rating, content, userName, commentId, userId }) => {
-    const { associatedUser, attemptDeleteComment } = useDeleteComment()
+    const deleteCommentMutation = useDeleteComment()
+    const { currentUserId } = React.useContext(UserContext)
 
     const renderRating = () => {
         let stars = []
@@ -19,7 +22,6 @@ export const Comment = ({ rating, content, userName, commentId, userId }) => {
         }   
         return stars
     }
-
 
     return (
         <div className="bg-white shadow overflow-hidden sm:rounded-md mb-3">
@@ -40,18 +42,16 @@ export const Comment = ({ rating, content, userName, commentId, userId }) => {
                         
                     </div>
                 </div>
-                {associatedUser === userId &&
+                {currentUserId === userId &&
                     <div className="ml-5 flex-shrink-0 inline-flex items-center justify-center gap-2">
                         <Button 
                         type="button"
-                        onClick={() => attemptDeleteComment(commentId)}
+                        onClick={() => deleteCommentMutation.mutate(commentId)}
                          >
                             <TrashIcon 
                             className="h-6 w-6 text-white" 
                             />
-                        </Button>
-                      
-                        
+                        </Button>                      
                     </div>
                 }
             </div>

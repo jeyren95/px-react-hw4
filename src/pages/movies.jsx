@@ -45,9 +45,9 @@ export const Movies = () => {
                 </Button>
             </div>
             <div className="grid md:grid-cols-2 gap-x-4 gap-y-8 xl:grid-cols-3 xl:gap-x-6">
-                {data ? renderMovies()
-                : isLoading ? <p>Loading...</p>
-                : isError && <p>{error.message}</p>               
+                { isLoading ? <p>Loading...</p>
+                : isError ? <p>{error.message}</p>
+                : renderMovies()
                 }
             </div>
         </div>

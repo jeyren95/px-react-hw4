@@ -1,11 +1,7 @@
 import React from "react";
-import { useQuery } from "react-query"
-
-// fetch movies
-const fetchMovies = (page, signal) => 
-    fetch(`https://ecomm-service.herokuapp.com/movie?page=${page}&limit=6`, {signal})
-    .then((res) => res.json())
-
+import { useQuery, useQueryClient } from "react-query";
+import { useParams } from "react-router-dom";
+import { fetchMovie, fetchMovies } from "../movies.service";
 
 export const useMovies = () => {
     const [page, setPage] = React.useState(1)
@@ -14,36 +10,41 @@ export const useMovies = () => {
         // query key is used internally for refetching, caching, sharing data across the app
         // require array as key => page is a dependency
         // query function returns a promise => usually the api call
-    const queryResult = useQuery(["movies", page], () => {
+    const query = useQuery(["movies", page], () => {
         const controller = new AbortController()
         const request = fetchMovies(page, controller.signal)
 
         // attach the cancel function to the promise => react query will call the cancel function if needed (like when the query key changes before the promise is resolved)
         request.cancel = () => controller.abort()
         return request
+    }, {
+        keepPreviousData: true
     })
     
-    
-    console.log(queryResult)
     return {
-        ...queryResult,
+        ...query,
         page,
         setPage 
     }
 }
 
 
+export const useMovieDetails = () => {
+    const { movieId } = useParams()
+    const queryClient = useQueryClient()
 
-// React.useEffect(() => { 
-//     let controller = new AbortController()
+    const movieDetailsQuery = useQuery(["movieDetails", movieId], () => {
+        const controller = new AbortController()
+        const request = fetchMovie(movieId, controller.signal)
+        request.cancel = () => controller.abort()
+        return request
+    }, {
+        placeholderData: () => {
+            return queryClient
+            .getQueryData("movies")
+            ?.find(cachedData => cachedData._id === movieId)
+        }
+    })
 
-//     fetchMovies(page, controller.signal)
-//     .then((data) => setMovies(data))
-//     .catch((err) => {
-//         console.log(err)
-//     })
-
-//     return () => {
-//         controller.abort()
-//     }
-// }, [page])
+    return movieDetailsQuery
+}

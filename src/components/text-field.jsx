@@ -3,7 +3,7 @@ import { Field } from "./field";
 import { TextInput } from "./text-input";
 import { Label } from "./label";
 
-export const TextField = React.forwardRef(({id, label, ...props}, ref) => {
+export const TextField = React.forwardRef(({ id, label, ...props }, ref) => {
     return (
         <Field id={id}>
             <Label>{label}</Label>
