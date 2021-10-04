@@ -27,7 +27,6 @@ export const RegisterForm = () => {
         onSubmit: (values) => {
             attemptRegister(values)
             formik.resetForm()
-            nameRef.current && nameRef.current.focus()
         }
     })
 
@@ -40,6 +39,7 @@ export const RegisterForm = () => {
                 {registerError !== [] && <p className="m-3 text-pink-600">{registerError}</p>} 
                 <div className="space-y-6">
                     <TextField 
+                    autoFocus={true}
                     onChange={formik.handleChange}
                     onBlur={formik.handleBlur}
                     touched={formik.touched.name}

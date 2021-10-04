@@ -23,7 +23,6 @@ export const LoginForm = () => {
         onSubmit: (values) => {
             attemptLogin(values)
             formik.resetForm()
-            usernameRef.current && usernameRef.current.focus()
         }
     })
 
@@ -36,6 +35,7 @@ export const LoginForm = () => {
                 {loginError !== "" && <p className="m-3 text-pink-600">{loginError}</p>} 
                 <div className="space-y-6">
                     <TextField 
+                    autoFocus={true}
                     onChange={formik.handleChange} 
                     onBlur={formik.handleBlur}
                     touched={formik.touched.username}
