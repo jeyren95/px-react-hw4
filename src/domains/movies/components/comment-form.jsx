@@ -35,7 +35,6 @@ export const CommentForm = ({ movieId }) => {
 
     return (
         <div className="max-w-md">
-            {submitCommentMutation.data && submitCommentMutation.data.message && <p className="m-3 text-pink-600">Sorry, {submitCommentMutation.data.message}, please try again.</p>} 
             <form className="p-6" onSubmit={formik.handleSubmit}>
                 <div className="space-y-6">
                     <TextField 
