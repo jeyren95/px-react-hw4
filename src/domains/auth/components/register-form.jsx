@@ -31,12 +31,6 @@ export const RegisterForm = () => {
         }
     })
 
-    // on load, focus on name input
-    React.useEffect(() => {
-        nameRef.current.focus()
-    }, [])
-
-
     return (
         <div className="max-w-md mx-auto m-6 shadow">
             <form className="p-6" onSubmit={formik.handleSubmit}>

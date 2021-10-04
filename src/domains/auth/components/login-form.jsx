@@ -27,11 +27,6 @@ export const LoginForm = () => {
         }
     })
 
-    React.useEffect(() => {
-        usernameRef.current.focus()
-    }, [])
-
-
     return (
         <div className="max-w-md mx-auto m-6 shadow">   
             <form className="p-6" onSubmit={formik.handleSubmit}>
